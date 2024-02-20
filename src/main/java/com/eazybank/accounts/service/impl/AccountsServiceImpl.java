@@ -5,6 +5,8 @@ import com.eazybank.accounts.dto.CustomerDto;
 import com.eazybank.accounts.entity.Accounts;
 import com.eazybank.accounts.entity.Customer;
 import com.eazybank.accounts.exception.CustomerAlreadyExistsException;
+import com.eazybank.accounts.exception.ResourceNotFoundException;
+import com.eazybank.accounts.mapper.AccountsMapper;
 import com.eazybank.accounts.mapper.CustomerMapper;
 import com.eazybank.accounts.repository.AccountsRepository;
 import com.eazybank.accounts.repository.CustomerRepository;
@@ -23,6 +25,7 @@ public class AccountsServiceImpl implements IAccountsService {
     private final AccountsRepository accountsRepository;
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final AccountsMapper accountsMapper;
 
     /**
      * @param customerDto - CustomerDto Object
@@ -41,6 +44,7 @@ public class AccountsServiceImpl implements IAccountsService {
         accountsRepository.save(createNewAccount(savedCustomer));
     }
 
+
     private Accounts createNewAccount(Customer customer) {
         Accounts newAccount = new Accounts();
         newAccount.setCustomerId(customer.getCustomerId());
@@ -53,5 +57,20 @@ public class AccountsServiceImpl implements IAccountsService {
         newAccount.setCreatedBy("Anonymous");
 
         return newAccount;
+    }
+
+    @Override
+    public CustomerDto fetchAccount(String mobileNumber) {
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+        );
+
+        Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
+                () -> new ResourceNotFoundException("Account", "customerId", customer.getCustomerId().toString())
+        );
+
+        CustomerDto customerDto = customerMapper.toDto(customer);
+        customerDto.setAccountsDto(accountsMapper.toDto(accounts));
+        return customerDto;
     }
 }
