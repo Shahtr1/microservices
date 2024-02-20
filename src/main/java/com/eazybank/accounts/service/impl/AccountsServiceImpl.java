@@ -1,6 +1,7 @@
 package com.eazybank.accounts.service.impl;
 
 import com.eazybank.accounts.constants.AccountsConstants;
+import com.eazybank.accounts.dto.AccountsDto;
 import com.eazybank.accounts.dto.CustomerDto;
 import com.eazybank.accounts.entity.Accounts;
 import com.eazybank.accounts.entity.Customer;
@@ -72,5 +73,33 @@ public class AccountsServiceImpl implements IAccountsService {
         CustomerDto customerDto = customerMapper.toDto(customer);
         customerDto.setAccountsDto(accountsMapper.toDto(accounts));
         return customerDto;
+    }
+
+    @Override
+    public boolean updateAccount(CustomerDto customerDto) {
+        boolean isUpdated = false;
+        AccountsDto accountsDto = customerDto.getAccountsDto();
+        if (accountsDto != null) {
+            Accounts accounts = accountsRepository.findById(accountsDto.getAccountNumber()).orElseThrow(
+                    () -> new ResourceNotFoundException
+                            ("Account", "accountNumber", accountsDto.getAccountNumber().toString())
+            );
+            Accounts accountsToSave = accountsMapper.toEntity(accountsDto);
+            accountsToSave.setCustomerId(accounts.getCustomerId());
+
+            accounts = accountsRepository.save(accountsToSave);
+
+            Long customerId = accounts.getCustomerId();
+            customerRepository.findById(customerId).orElseThrow(
+                    () -> new ResourceNotFoundException("Customer", "customerId", customerId.toString())
+            );
+
+            Customer customerToSave = customerMapper.toEntity(customerDto);
+            customerToSave.setCustomerId(customerId);
+
+            customerRepository.save(customerToSave);
+            isUpdated = true;
+        }
+        return isUpdated;
     }
 }
