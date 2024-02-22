@@ -1,0 +1,11 @@
+build:
+  version: "2.0"
+
+loans:
+  message: "Welcome to EazyBank cards loans QA APIs "
+  contactDetails:
+    name: "lana Ray - QA Lead"
+    email: "lana@eazybank.com"
+  onCallSupport:
+    - (333) 972-1234
+    - (333) 567-1345

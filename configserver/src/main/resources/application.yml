@@ -7,7 +7,7 @@ spring:
     config:
       server:
         native:
-          search-locations: "classpath:/config"
-
+          search-locations: "file:///C://Users//tramb//OneDrive//Documents//microservices//config"
+        ## search-locations: "classpath:/config"
 server:
   port: 8071

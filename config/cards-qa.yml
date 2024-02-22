@@ -1,0 +1,11 @@
+build:
+  version: "2.0"
+
+cards:
+  message: "Welcome to EazyBank cards related QA APIs "
+  contactDetails:
+    name: "Card Ray - QA Lead"
+    email: "card@eazybank.com"
+  onCallSupport:
+    - (999) 256-1234
+    - (999) 734-1345

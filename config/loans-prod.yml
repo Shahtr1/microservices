@@ -1,0 +1,11 @@
+build:
+  version: "1.0"
+
+loans:
+  message: "Welcome to EazyBank cards related loans APIs "
+  contactDetails:
+    name: "lone Tramboo - Product Owner"
+    email: "lone@eazybank.com"
+  onCallSupport:
+    - (777) 420-1234
+    - (777) 101-1345

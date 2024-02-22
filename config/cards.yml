@@ -1,0 +1,11 @@
+build:
+  version: "3.0"
+
+cards:
+  message: "Welcome to EazyBank cards related local APIs "
+  contactDetails:
+    name: "card Doe - Developer"
+    email: "card@eazybank.com"
+  onCallSupport:
+    - (000) 090-1234
+    - (111) 121-1345

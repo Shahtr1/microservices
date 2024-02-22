@@ -1,0 +1,11 @@
+build:
+  version: "1.0"
+
+cards:
+  message: "Welcome to EazyBank cards related prod APIs "
+  contactDetails:
+    name: "New Tramboo - Product Owner"
+    email: "new@eazybank.com"
+  onCallSupport:
+    - (010) 123-1234
+    - (320) 789-1345

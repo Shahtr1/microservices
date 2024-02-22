@@ -1,0 +1,11 @@
+build:
+  version: "3.0"
+
+loans:
+  message: "Welcome to EazyBank loans related local APIs "
+  contactDetails:
+    name: "no Doe - Developer"
+    email: "nodoe@eazybank.com"
+  onCallSupport:
+    - (888) 232-1234
+    - (888) 444-1345
