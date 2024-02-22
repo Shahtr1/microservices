@@ -23,5 +23,10 @@ spring:
     password: guest
 encrypt:
   key: "45D81EC1EF61DF8AD8D3E5BB397F9"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # enable all management endpoints by the actuator, to support refreshing of configs
 server:
   port: 8071
