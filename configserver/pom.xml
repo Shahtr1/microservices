@@ -65,7 +65,7 @@
                 <version>3.4.0</version>
                 <configuration>
                     <to>
-                        <image>clay404/${project.artifactId}:v1</image>
+                        <image>clay404/${project.artifactId}:v2</image>
                     </to>
                 </configuration>
             </plugin>
