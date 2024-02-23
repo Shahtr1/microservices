@@ -1,30 +1,9 @@
 services:
-  rabbit:
-    image: rabbitmq:3.12-management
-    hostname: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    healthcheck:
-      test: rabbitmq-diagnostics check_port_connectivity
-      # if rabbitmq might tale good amount of time, in some cases we get the failure, so use below config
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 10s
-    extends:
-      file: common-config.yml
-      service: network-deploy-service
-
-
   configserver:
     image: "clay404/configserver:v1"
     container_name: configserver-ms
     ports:
       - "8071:8071"
-    depends_on:
-      rabbit:
-        condition: service_healthy
     healthcheck:
       test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
       # if config server might tale good amount of time, in some cases we get the failure, so use below config
@@ -35,6 +14,28 @@ services:
     extends:
       file: common-config.yml
       service: microservice-base-config
+
+
+  eurekaserver:
+    image: "clay404/eurekaserver:v1"
+    container_name: eurekaserver-ms
+    ports:
+      - "8070:8070"
+    healthcheck:
+      test: "curl --fail --silent localhost:8070/actuator/health/readiness | grep UP || exit 1"
+      # if config server might tale good amount of time, in some cases we get the failure, so use below config
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
+    depends_on:
+      configserver:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "eurekaserver"
 
 
   accounts:
