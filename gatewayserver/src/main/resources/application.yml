@@ -8,6 +8,7 @@ spring:
       discovery:
         locator:
           enabled: true # locate all the individual microservices, to forward the request
+          lower-case-service-id: true
 
 management:
   endpoints:
