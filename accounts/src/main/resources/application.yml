@@ -85,6 +85,7 @@ resilience4j:
         permitted-number-of-calls-in-half-open-state: 2 # It will never be in open status forever, i want it to allow 2 request when i half open status
         failure-rate-threshold: 50 # if 50 % fail then it can move from close to open
         wait-duration-in-open-state: 10000 # wait 10 seconds when it try to move to half open
+
   retry:
     configs:
       default:
@@ -96,6 +97,15 @@ resilience4j:
         ignore-exceptions:
           - java.lang.NullPointerException
 
-        # we dont need above ignore exceptions now, can remove it
+        # we don't need above ignore exceptions now, can remove it
         retry-exceptions:
           - java.util.concurrent.TimeoutException
+
+  ratelimiter:
+    configs:
+      default:
+        timeout-duration: 1000 # thread to wait for new quota
+        limit-refresh-period: 5000 # for every 5 seconds renew quota
+        limit-for-period: 1 # only 1 request allowed for every 5 seconds
+
+
