@@ -36,3 +36,14 @@ logging:
     com:
       eazybank:
         gatewayserver: DEBUG
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 10 # how many request it has to monitor before it goes to Open or Back to Close status
+        permitted-number-of-calls-in-half-open-state: 2 # It will never be in open status forever, i want it to allow 2 request when i half open status
+        failure-rate-threshold: 50 # if 50 % fail then it can move from close to open
+        wait-duration-in-open-state: 10000 # wait 10 seconds when it try to move to half open
+
+
+
