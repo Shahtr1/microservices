@@ -26,9 +26,17 @@ management:
     web:
       exposure:
         include: "*" # enable all management endpoints by the actuator, to support refreshing of configs
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
   endpoint:
     shutdown:
       enabled: true # enable client to unregister from eureka server
+    health:
+      probes:
+        enabled: true
   info:
     env:
       enabled: true
