@@ -7,7 +7,9 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true # locate all the individual microservices, to forward the request
+#          enabled: true # locate all the individual microservices, to forward the request
+          # disabled above because now we have used custom routing using applications name like eazybank/**
+          enabled: false # locate all the individual microservices, to forward the request
           lower-case-service-id: true
 
 management:
