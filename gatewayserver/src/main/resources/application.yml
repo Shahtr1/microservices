@@ -31,11 +31,16 @@ info:
     description: "Eazy Bank Gateway Server Application"
     version: "1.0.0"
 
+
+
 logging:
   level:
     com:
       eazybank:
         gatewayserver: DEBUG
+
+
+
 resilience4j:
   circuitbreaker:
     configs:
