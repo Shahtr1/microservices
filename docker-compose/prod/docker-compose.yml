@@ -40,6 +40,13 @@ services:
     container_name: accounts-ms
     ports:
       - "8080:8080"
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health/readiness | grep UP || exit 1"
+      # if config server might tale good amount of time, in some cases we get the failure, so use below config
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: "accounts"
     extends:
@@ -52,11 +59,31 @@ services:
     container_name: loans-ms
     ports:
       - "8090:8090"
+    healthcheck:
+      test: "curl --fail --silent localhost:8090/actuator/health/readiness | grep UP || exit 1"
+      # if config server might tale good amount of time, in some cases we get the failure, so use below config
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: "loans"
     extends:
       file: common-config.yml
       service: microservice-eurekaserver-config
+
+  #  removed this for now
+  #  loans1:
+  #    image: "clay404/loans:v1"
+  #    container_name: loans-ms1
+  #    ports:
+  #      - "8091:8090"
+  #
+  #    environment:
+  #      SPRING_APPLICATION_NAME: "loans"
+  #    extends:
+  #      file: common-config.yml
+  #      service: microservice-eurekaserver-config
 
 
   cards:
@@ -64,8 +91,34 @@ services:
     container_name: cards-ms
     ports:
       - "9000:9000"
+    healthcheck:
+      test: "curl --fail --silent localhost:9000/actuator/health/readiness | grep UP || exit 1"
+      # if config server might tale good amount of time, in some cases we get the failure, so use below config
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: "cards"
+    extends:
+      file: common-config.yml
+      service: microservice-eurekaserver-config
+
+
+  gatewayserver:
+    image: "clay404/gatewayserver:v1"
+    container_name: gatewayserver-ms
+    ports:
+      - "8072:8072"
+    depends_on:
+      accounts:
+        condition: service_healthy
+      loans:
+        condition: service_healthy
+      cards:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "gatewayserver"
     extends:
       file: common-config.yml
       service: microservice-eurekaserver-config
