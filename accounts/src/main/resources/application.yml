@@ -85,3 +85,17 @@ resilience4j:
         permitted-number-of-calls-in-half-open-state: 2 # It will never be in open status forever, i want it to allow 2 request when i half open status
         failure-rate-threshold: 50 # if 50 % fail then it can move from close to open
         wait-duration-in-open-state: 10000 # wait 10 seconds when it try to move to half open
+  retry:
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 500
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+
+        ignore-exceptions:
+          - java.lang.NullPointerException
+
+        # we dont need above ignore exceptions now, can remove it
+        retry-exceptions:
+          - java.util.concurrent.TimeoutException
