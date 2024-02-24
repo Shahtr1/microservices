@@ -1,4 +1,15 @@
 services:
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD-SHELL","redis-cli ping | grep PONG"]
+      timeout: 10s
+      retries: 10
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
   configserver:
     image: "clay404/configserver:v1"
     container_name: configserver-ms
@@ -72,18 +83,18 @@ services:
       file: common-config.yml
       service: microservice-eurekaserver-config
 
-#  removed this for now
-#  loans1:
-#    image: "clay404/loans:v1"
-#    container_name: loans-ms1
-#    ports:
-#      - "8091:8090"
-#
-#    environment:
-#      SPRING_APPLICATION_NAME: "loans"
-#    extends:
-#      file: common-config.yml
-#      service: microservice-eurekaserver-config
+  #  removed this for now
+  #  loans1:
+  #    image: "clay404/loans:v1"
+  #    container_name: loans-ms1
+  #    ports:
+  #      - "8091:8090"
+  #
+  #    environment:
+  #      SPRING_APPLICATION_NAME: "loans"
+  #    extends:
+  #      file: common-config.yml
+  #      service: microservice-eurekaserver-config
 
 
   cards:
@@ -117,8 +128,14 @@ services:
         condition: service_healthy
       cards:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: "gatewayserver"
+      SPRING_DATA_REDIS_CONNECT-TIMEOUT: 2s
+      SPRING_DATA_REDIS_HOST: 2s
+      SPRING_DATA_REDIS_PORT: 2s
+      SPRING_DATA_REDISTIMEOUT: 2s
     extends:
       file: common-config.yml
       service: microservice-eurekaserver-config
