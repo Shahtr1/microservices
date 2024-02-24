@@ -13,6 +13,7 @@ public class GatewayserverApplication {
 		SpringApplication.run(GatewayserverApplication.class, args);
 	}
 
+//	can also add config in yml, but this way we can do a lot of stuff with no limitations
 	@Bean
 	public RouteLocator eazyBankRouteConfig(RouteLocatorBuilder routeLocatorBuilder){
 		return routeLocatorBuilder.routes()
