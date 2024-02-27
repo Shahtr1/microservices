@@ -41,6 +41,10 @@ management:
     env:
       enabled: true
 
+  metrics:
+    tags:
+      application: ${spring.application.name} # please group all my metrics under my application name, for prometheus
+
 endpoints:
   shutdown:
     enabled: true # to enable shutdown endpoints from actuator

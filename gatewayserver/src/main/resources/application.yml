@@ -35,6 +35,10 @@ management:
     env:
       enabled: true
 
+  metrics:
+    tags:
+      application: ${spring.application.name} # please group all my metrics under my application name, for prometheus
+
 # now for eureka dashboard
 info:
   app:
