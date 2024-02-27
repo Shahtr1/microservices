@@ -13,7 +13,7 @@ spring:
           lower-case-service-id: true
       httpclient:
         connect-timeout: 1000
-        response-timeout: 2s
+        response-timeout: 10s # because we are testing in local env, default is 2s
   data:
     redis:
       connect-timeout: 2s
