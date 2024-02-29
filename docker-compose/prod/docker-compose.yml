@@ -111,6 +111,20 @@ services:
       service: network-deploy-service
 
 
+  tempo:
+    image: grafana/tempo
+    container_name: tempo
+    command: -config.file /etc/tempo-config.yml
+    ports:
+      - "3110:3100"
+      - "4317:4317"
+    volumes:
+      - ../observability/tempo/tempo.yml:/etc/tempo-config.yml
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
+
   grafana:
     image: grafana/grafana:latest
     environment:
@@ -219,13 +233,15 @@ services:
     healthcheck:
       test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
       # if config server might tale good amount of time, in some cases we get the failure, so use below config
-      interval: 10s
+      interval: 20s # if error give more time to containers to improve their health status
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     extends:
       file: common-config.yml
       service: microservice-base-config
+    environment:
+      OTEL_SERVICE_NAME: "configserver"
 
 
   eurekaserver:
@@ -236,15 +252,16 @@ services:
     healthcheck:
       test: "curl --fail --silent localhost:8070/actuator/health/readiness | grep UP || exit 1"
       # if config server might tale good amount of time, in some cases we get the failure, so use below config
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     extends:
       file: common-config.yml
       service: microservice-configserver-config
     environment:
       SPRING_APPLICATION_NAME: "eurekaserver"
+      OTEL_SERVICE_NAME: "eurekaserver"
 
 
   accounts:
@@ -255,12 +272,13 @@ services:
     healthcheck:
       test: "curl --fail --silent localhost:8080/actuator/health/readiness | grep UP || exit 1"
       # if config server might take good amount of time, in some cases we get the failure, so use below config
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: "accounts"
+      OTEL_SERVICE_NAME: "accounts"
     extends:
       file: common-config.yml
       service: microservice-eurekaserver-config
@@ -274,12 +292,13 @@ services:
     healthcheck:
       test: "curl --fail --silent localhost:8090/actuator/health/readiness | grep UP || exit 1"
       # if config server might tale good amount of time, in some cases we get the failure, so use below config
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: "loans"
+      OTEL_SERVICE_NAME: "loans"
     extends:
       file: common-config.yml
       service: microservice-eurekaserver-config
@@ -306,12 +325,13 @@ services:
     healthcheck:
       test: "curl --fail --silent localhost:9000/actuator/health/readiness | grep UP || exit 1"
       # if config server might tale good amount of time, in some cases we get the failure, so use below config
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: "cards"
+      OTEL_SERVICE_NAME: "cards"
     extends:
       file: common-config.yml
       service: microservice-eurekaserver-config
@@ -334,6 +354,7 @@ services:
 #        condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: "gatewayserver"
+      OTEL_SERVICE_NAME: "gatewayserver"
 
       # commented it, nwo we will not be testing rate limiter pattern
 #      SPRING_DATA_REDIS_CONNECT-TIMEOUT: 2s
