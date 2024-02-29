@@ -254,7 +254,7 @@ services:
       - "8080:8080"
     healthcheck:
       test: "curl --fail --silent localhost:8080/actuator/health/readiness | grep UP || exit 1"
-      # if config server might tale good amount of time, in some cases we get the failure, so use below config
+      # if config server might take good amount of time, in some cases we get the failure, so use below config
       interval: 10s
       timeout: 5s
       retries: 10
