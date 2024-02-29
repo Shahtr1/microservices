@@ -22,3 +22,7 @@ management:
   metrics:
     tags:
       application: ${spring.application.name} # please group all my metrics under my application name, for prometheus
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"

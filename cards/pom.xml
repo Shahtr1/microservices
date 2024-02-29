@@ -19,6 +19,7 @@
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <org.lombok.version>1.18.30</org.lombok.version>
         <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <otelVersion>2.0.0</otelVersion>
     </properties>
     <dependencies>
         <dependency>
@@ -33,6 +34,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.javaagent</groupId>
+            <artifactId>opentelemetry-javaagent</artifactId>
+            <version>${otelVersion}</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
