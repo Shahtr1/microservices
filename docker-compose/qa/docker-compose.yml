@@ -13,6 +13,21 @@ services:
   #      file: common-config.yml
   #      service: network-deploy-service
 
+  rabbit:
+    image: rabbitmq:3.13-management
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
 
   keycloak:
     image: quay.io/keycloak/keycloak:23.0.7
@@ -292,9 +307,13 @@ services:
       timeout: 5s
       retries: 20
       start_period: 10s
+    depends_on:
+      rabbit:
+        condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: "accounts"
       OTEL_SERVICE_NAME: "accounts"
+      SPRING_RABBITMQ_HOST: "rabbit"
     extends:
       file: common-config.yml
       service: microservice-eurekaserver-config
@@ -353,6 +372,21 @@ services:
       service: microservice-eurekaserver-config
 
 
+
+  message:
+    image: "clay404/message:v1"
+    container_name: message-ms
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    environment:
+      SPRING_RABBITMQ_HOST: "rabbit"
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
+
+
   gatewayserver:
     image: "clay404/gatewayserver:v1"
     container_name: gatewayserver-ms
@@ -371,7 +405,7 @@ services:
     environment:
       SPRING_APPLICATION_NAME: "gatewayserver"
       OTEL_SERVICE_NAME: "gatewayserver"
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: "http://localhost:8080/realms/master/protocol/openid-connect/certs"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: "http://keycloak:8080/realms/master/protocol/openid-connect/certs"
 
       # commented it, nwo we will not be testing rate limiter pattern
     #      SPRING_DATA_REDIS_CONNECT-TIMEOUT: 2s
@@ -381,6 +415,9 @@ services:
     extends:
       file: common-config.yml
       service: microservice-eurekaserver-config
+
+
+
 
 
 networks:
