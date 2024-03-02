@@ -7,3 +7,20 @@ spring:
   cloud:
     function:
       definition: email|sms # compose both into a single logical unit
+    stream:
+      bindings:
+        # we create a binding with the name "emailsms-in-0", where our message service will always be looking for a message in queue named "send-communication.message"
+        emailsms-in-0: # binding name, for integration of message brokers with Function(s)
+          # we are binding input to the message queue named send-communication
+          destination: send-communication # in rabbit mq, there has to be a queue named send-communication when setting input bindings
+          group: ${spring.application.name} # if we dont set it then, then rabbit mq, will add random value to destination, channel and queue names
+
+        # now we want to stream and create output bindings
+        emailsms-out-0:
+          destination: communication-sent # exchange name, will return accountNumber value, because of Spring Cloud Function i.e., Function bean
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    connection-timeout: 10s
