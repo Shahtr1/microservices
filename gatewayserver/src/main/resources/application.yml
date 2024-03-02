@@ -20,8 +20,13 @@ spring:
       host: localhost
       port: 6379
       timeout: 1s
-
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: "http://localhost:7080/realms/master/protocol/openid-connect/certs"
+          # during startup it will download public certificate from the keycloak server
+          # all the access token checks will be performed using this certificate
 
 management:
   endpoints:
