@@ -1,0 +1,10 @@
+# Step 1:
+# Source: https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
+# To create admin-user service account
+# >> kubectl apply -f dashboard-adminuser.yaml
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
