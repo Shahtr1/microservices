@@ -128,7 +128,7 @@ auth:
   adminUser: user
   ## @param auth.adminPassword Keycloak administrator password for the new user
   ##
-  adminPassword: ""
+  adminPassword: "password"
   ## @param auth.existingSecret Existing secret containing Keycloak admin password
   ##
   existingSecret: ""
@@ -513,7 +513,7 @@ sidecars: []
 service:
   ## @param service.type Kubernetes service type
   ##
-  type: ClusterIP
+  type: LoadBalancer
   ## @param service.http.enabled Enable http port on service
   ##
   http:
