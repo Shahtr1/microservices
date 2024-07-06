@@ -1,6 +1,8 @@
 package com.shahbytes.OrderService.command.api.aggregate;
 
+import com.shahbytes.CommonService.commands.CancelOrderCommand;
 import com.shahbytes.CommonService.commands.CompleteOrderCommand;
+import com.shahbytes.CommonService.events.OrderCancelledEvent;
 import com.shahbytes.CommonService.events.OrderCompletedEvent;
 import com.shahbytes.OrderService.command.api.commands.CreateOrderCommand;
 import com.shahbytes.OrderService.command.api.events.OrderCreatedEvent;
@@ -63,4 +65,17 @@ public class OrderAggregate {
     }
 
 
+    @CommandHandler
+    public void handle(CancelOrderCommand cancelOrderCommand) {
+        //Validate The Command
+        // Publish Order Completed Event
+        OrderCancelledEvent orderCancelledEvent = new OrderCancelledEvent();
+        BeanUtils.copyProperties(cancelOrderCommand, orderCancelledEvent);
+        AggregateLifecycle.apply(orderCancelledEvent);
+    }
+
+    @EventSourcingHandler
+    public void on(OrderCancelledEvent event) {
+        this.orderStatus = event.getOrderStatus();
+    }
 }

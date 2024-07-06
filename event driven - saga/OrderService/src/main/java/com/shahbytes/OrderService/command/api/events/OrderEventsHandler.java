@@ -1,5 +1,6 @@
 package com.shahbytes.OrderService.command.api.events;
 
+import com.shahbytes.CommonService.events.OrderCancelledEvent;
 import com.shahbytes.CommonService.events.OrderCompletedEvent;
 import com.shahbytes.OrderService.command.api.data.Order;
 import com.shahbytes.OrderService.command.api.data.OrderRepository;
@@ -18,7 +19,7 @@ public class OrderEventsHandler {
     @EventHandler
     public void on(OrderCreatedEvent event) {
         Order order = new Order();
-        BeanUtils.copyProperties(event,order);
+        BeanUtils.copyProperties(event, order);
         orderRepository.save(order);
     }
 
@@ -30,6 +31,16 @@ public class OrderEventsHandler {
         order.setOrderStatus(event.getOrderStatus());
 
         orderRepository.save(order);
+    }
+
+    @EventHandler
+    public void on(OrderCancelledEvent event) {
+        Order order
+                = orderRepository.findById(event.getOrderId()).get();
+
+        order.setOrderStatus(event.getOrderStatus());
+        orderRepository.save(order);
+
     }
 
 
