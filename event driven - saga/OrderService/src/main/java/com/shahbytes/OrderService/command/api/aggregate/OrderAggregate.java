@@ -1,5 +1,7 @@
 package com.shahbytes.OrderService.command.api.aggregate;
 
+import com.shahbytes.CommonService.commands.CompleteOrderCommand;
+import com.shahbytes.CommonService.events.OrderCompletedEvent;
 import com.shahbytes.OrderService.command.api.commands.CreateOrderCommand;
 import com.shahbytes.OrderService.command.api.events.OrderCreatedEvent;
 import lombok.NoArgsConstructor;
@@ -42,4 +44,23 @@ public class OrderAggregate {
         this.quantity = event.getQuantity();
         this.orderStatus = event.getOrderStatus();
     }
+
+    @CommandHandler
+    public void handle(CompleteOrderCommand completeOrderCommand) {
+        //Validate The Command
+        // Publish Order Completed Event
+        OrderCompletedEvent orderCompletedEvent
+                = OrderCompletedEvent.builder()
+                .orderStatus(completeOrderCommand.getOrderStatus())
+                .orderId(completeOrderCommand.getOrderId())
+                .build();
+        AggregateLifecycle.apply(orderCompletedEvent);
+    }
+
+    @EventSourcingHandler
+    public void on(OrderCompletedEvent event) {
+        this.orderStatus = event.getOrderStatus();
+    }
+
+
 }
