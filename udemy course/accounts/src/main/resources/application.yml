@@ -1,0 +1,130 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: "accounts"
+  profiles:
+    active: "prod"
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ''
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  config:
+    import: "optional:configserver:http://localhost:8071/"
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+    function:
+      definition: updateCommunication
+    stream:
+      bindings:
+        updateCommunication-in-0:
+          destination: communication-sent
+          group: ${spring.application.name}
+        sendCommunication-out-0:
+          destination: send-communication # exchange name when setting output bindings
+      kafka:
+        binder:
+          brokers:
+            - localhost:9092
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # enable all management endpoints by the actuator, to support refreshing of configs
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
+  endpoint:
+    shutdown:
+      enabled: true # enable client to unregister from eureka server
+    health:
+      probes:
+        enabled: true
+
+  info:
+    env:
+      enabled: true
+
+  metrics:
+    tags:
+      application: ${spring.application.name} # please group all my metrics under my application name, for prometheus
+
+endpoints:
+  shutdown:
+    enabled: true # to enable shutdown endpoints from actuator
+
+
+
+eureka:
+  instance:
+    prefer-ip-address: true # when registering it will try to register with hostname, as there will be no dns mapping setup so it will use op address instead
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8070/eureka/
+
+# now for eureka dashboard
+info:
+  app:
+    name: "accounts"
+    description: "Eazy Bank Accounts Application"
+    version: "1.0.0"
+
+
+
+logging:
+  level:
+    com:
+      eazybank:
+        accounts: DEBUG
+  pattern:
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 10 # how many request it has to monitor before it goes to Open or Back to Close status
+        permitted-number-of-calls-in-half-open-state: 2 # It will never be in open status forever, i want it to allow 2 request when i half open status
+        failure-rate-threshold: 50 # if 50 % fail then it can move from close to open
+        wait-duration-in-open-state: 10000 # wait 10 seconds when it try to move to half open
+
+  retry:
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 500
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+
+        ignore-exceptions:
+          - java.lang.NullPointerException
+
+        # we don't need above ignore exceptions now, can remove it
+        retry-exceptions:
+          - java.util.concurrent.TimeoutException
+
+  ratelimiter:
+    configs:
+      default:
+        timeout-duration: 1000 # thread to wait for new quota
+        limit-refresh-period: 5000 # for every 5 seconds renew quota
+        limit-for-period: 1 # only 1 request allowed for every 5 seconds
+
+

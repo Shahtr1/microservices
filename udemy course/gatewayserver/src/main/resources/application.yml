@@ -1,0 +1,76 @@
+spring:
+  application:
+    name: "gatewayserver"
+  config:
+    import: "optional:configserver:http://localhost:8071/"
+  cloud:
+    gateway:
+      discovery:
+        locator:
+#          enabled: true # locate all the individual microservices, to forward the request
+          # disabled above because now we have used custom routing using applications name like eazybank/**
+          enabled: false # locate all the individual microservices, to forward the request
+          lower-case-service-id: true
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 10s # because we are testing in local env, default is 2s
+  data:
+    redis:
+      connect-timeout: 2s
+      host: localhost
+      port: 6379
+      timeout: 1s
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: "http://localhost:7080/realms/master/protocol/openid-connect/certs"
+          # during startup it will download public certificate from the keycloak server
+          # all the access token checks will be performed using this certificate
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # expose all management endpoints by the actuator, to support refreshing of configs
+  endpoint:
+    gateway:
+      enabled: true
+  info:
+    env:
+      enabled: true
+
+  metrics:
+    tags:
+      application: ${spring.application.name} # please group all my metrics under my application name, for prometheus
+
+# now for eureka dashboard
+info:
+  app:
+    name: "gatewayserver"
+    description: "Eazy Bank Gateway Server Application"
+    version: "1.0.0"
+
+
+
+logging:
+  level:
+    com:
+      eazybank:
+        gatewayserver: DEBUG
+  pattern:
+      level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+
+
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 10 # how many request it has to monitor before it goes to Open or Back to Close status
+        permitted-number-of-calls-in-half-open-state: 2 # It will never be in open status forever, i want it to allow 2 request when i half open status
+        failure-rate-threshold: 50 # if 50 % fail then it can move from close to open
+        wait-duration-in-open-state: 10000 # wait 10 seconds when it try to move to half open
+
+
+

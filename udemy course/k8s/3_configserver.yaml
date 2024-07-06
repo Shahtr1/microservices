@@ -1,0 +1,41 @@
+# Source: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+# It is also called as kubernetes manifest files
+
+apiVersion: apps/v1
+kind: Deployment # pre defined object in kubernetes
+metadata:
+  name: configserver-deployment # can be anything, this is name if deployment, must be unique
+  labels:
+    app: configserver # very important
+spec:
+  replicas: 1 # will deploy only in one pod, if 3 then 3 pods
+  selector:
+    matchLabels:
+      app: configserver # apply the specifications to the label configserver, as mentioned above
+  template: # what are template instructions, how to deploy our microservices
+    metadata:
+      labels:
+        app: configserver
+    spec:
+      containers:
+        - name: configserver # name of container
+          image: clay404/configserver:v1 # image created of microservice, by default it considers ''docker.io''
+          ports:
+            - containerPort: 8071
+          imagePullPolicy: IfNotPresent # pull images locally, This tells Kubernetes to use the local image if it exists rather than pulling it.
+
+--- # it indicates that please treat the yaml below as separate yaml file ( 3 hyphens )
+# exposing or restricting the deployment
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: configserver
+spec:
+  selector:
+    app: configserver  # same as label above, apply specs to that containers
+  type: LoadBalancer # we want to expose them to outside world
+  ports:
+    - protocol: TCP
+      port: 8071 # exposed port
+      targetPort: 8071 # container internally started, it should be same as the container port above when defining specs of deployment
